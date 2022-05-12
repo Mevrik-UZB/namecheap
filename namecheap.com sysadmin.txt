@@ -1,0 +1,49 @@
+1. What kinds of DNS records do you know, and why is each of them needed?
+2. What is a routing table? How can you add records to it?
+3. Which console commands\utilities do you usually use to check server state and perform basic troubleshooting steps?
+4. You need to update the kernel on 100 servers. How do you complete this task?
+5. Please explain the following string:
+(date ; ps -ef | awk '{print $1}' | sort | uniq | wc -l ) >> Activity.log
+
+
+ANSWERS: 
+
+1. Name server record. It contains primary and secondary servers.
+
+2. Routing table - data packets traveling over a IP network will be directed. All IP-enabled devices, including routers and switches, use routing tables.
+
+example:
+destination		subnet mask			interface
+192.168.1.0		255.255.255.192		Eth0
+192.168.2.64	255.255.255.192		Eth1
+.... 
+
+Each interface has their unique static/DHCP IP.
+
+3. Commands: 
+cat /proc/*       -> Various Linux kernel statistics
+cat /proc/meminfo -> memory information, used and free spaces.
+mpstat            -> check each of the available CPUs on a multi-process. Basically, CPU status
+netstat -a | more -> network status. port or interface activated
+ps / ps -la       -> currently running processes
+top               -> CPU intensive task running, what`s going on with active processes
+vmstat -m/a       -> virtual memory monitor
+
+4. Shell script. For the main server, I would download the latest kernel as a *.deb (for Ubuntu) or *.rom (for Linux). Share it with all servers with script.
+Second script is for crontab. In every managed time, crontab shell script execute installing, updating, changing and rebooting 
+
+Other alternative way, Ansible, awx and git. All of my configuration files are in the git repository.
+Making a change to them triggers a ci pipeline on awx that them runs a playback to deploy the changes. Because of the idempotent nature of anisble, only the thing that I've changed gets updated. For certain high risk changes a test group of 10 servers gets the change first, if all is good, then it gets blasted out.
+
+There might be a problem with SSH, but I have not faced yet. If this occurs, then I have to manually log into the console of 100 servers.
+
+5. (date ; ps -ef | awk '{print $1}' | sort | uniq | wc -l ) >> Activity.log
+date: Shows the current date time.
+ps -ef: currently running processes with UID contains the username.
+awk '{print $1}' : print the first column og the previous command and save it to Activity.log
+sort : alphabetic sort, applies to ps-ef command
+uniq : find uniq lines in a given input, report/removes the duplicated lines
+wc -l : prints the number of lines present in a file, Activity.log
+
+Finally the output of the whole command will be saved on Activity.log file
+Executing multiple shell scripts at once.
